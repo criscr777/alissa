@@ -1,515 +1,127 @@
-"<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Para Alissa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
-      rel="stylesheet"
-    />
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
     <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: "Inter", sans-serif;
-        background-color: #f4f4f5; /* Cinza claro elegante */
-        min-height: 100vh;
-        overflow: hidden; /* Evita rolagem na tela inicial */
-        color: #18181b;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      /* ------------------------------------------- */
-      /* ESTRUTURA DO ENVELOPE (CORRIGIDA)           */
-      /* ------------------------------------------- */
-      .scene {
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 10;
-      }
-
-      .envelope-wrapper {
-        position: relative;
-        width: 320px;
-        height: 220px;
-        cursor: pointer;
-        transition: transform 0.3s;
-      }
-
-      .envelope-wrapper:hover {
-        transform: translateY(-5px);
-      }
-
-      /* Fundo do envelope */
-      .envelope-back {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #d4d4d8;
-        border-radius: 4px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-      }
-
-      /* O papel falso que sai do envelope */
-      .slide-paper {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        width: 300px;
-        height: 200px;
-        background: #ffffff;
-        border-radius: 4px;
-        z-index: 2;
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        padding: 25px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
-
-      /* Animação do papel saindo */
-      .slide-paper.slide-up {
-        transform: translateY(-150px);
-      }
-
-      /* Linhas falsas no papel */
-      .fake-text-line {
-        height: 8px;
-        background: #f4f4f5;
-        border-radius: 4px;
-        width: 100%;
-      }
-      .fake-text-line:last-child {
-        width: 60%;
-      }
-
-      /* Abas da frente do envelope (Recortes geométricos) */
-      .envelope-front-bottom {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #e4e4e7;
-        clip-path: polygon(0 100%, 50% 45%, 100% 100%);
-        z-index: 3;
-        border-radius: 0 0 4px 4px;
-      }
-
-      .envelope-front-left {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #f4f4f5;
-        clip-path: polygon(0 0, 50% 50%, 0 100%);
-        z-index: 3;
-        border-radius: 4px 0 0 4px;
-      }
-
-      .envelope-front-right {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #f4f4f5;
-        clip-path: polygon(100% 0, 50% 50%, 100% 100%);
-        z-index: 3;
-        border-radius: 0 4px 4px 0;
-      }
-
-      /* Aba que abre (Topo) */
-      .envelope-flap {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #a1a1aa;
-        clip-path: polygon(0 0, 100% 0, 50% 60%);
-        z-index: 4;
-        transform-origin: top center;
-        transition:
-          transform 0.5s ease-in-out,
-          z-index 0.5s;
-        border-radius: 4px 4px 0 0;
-      }
-
-      /* Lacre geométrico minimalista */
-      .seal {
-        position: absolute;
-        top: 60%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 24px;
-        height: 24px;
-        background: #27272a;
-        border-radius: 50%;
-      }
-
-      /* Animação de abrir a aba */
-      .envelope-wrapper.is-open .envelope-flap {
-        transform: rotateX(180deg);
-        z-index: 1; /* Cai para trás do papel */
-      }
-
-      .hint-text {
-        margin-top: 40px;
-        color: #71717a;
-        font-size: 0.8rem;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        animation: pulse 2s infinite;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 0.5;
-        }
-        50% {
-          opacity: 1;
-        }
-      }
-
-      /* ------------------------------------------- */
-      /* MODAL DA CARTA (TELA DE LEITURA)            */
-      /* ------------------------------------------- */
-      .modal-backdrop {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(24, 24, 27, 0.85); /* Fundo escuro */
-        z-index: 99;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.5s;
-        backdrop-filter: blur(4px);
-      }
-      .modal-backdrop.show {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      .letter-modal {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -40%) scale(0.95);
-        width: 100%;
-        height: 100dvh; /* Ocupa a tela toda no celular */
-        background: #ffffff;
-        z-index: 100;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow-y: auto;
-        padding: 60px 25px 40px 25px; /* Espaço pro botão de fechar */
-      }
-      .letter-modal.show {
-        opacity: 1;
-        visibility: visible;
-        transform: translate(-50%, -50%) scale(1);
-      }
-
-      /* Adaptação para telas maiores (computador) */
-      @media (min-width: 640px) {
-        .letter-modal {
-          max-width: 550px;
-          height: auto;
-          max-height: 85vh;
-          border-radius: 8px;
-          padding: 50px 40px;
-        }
-      }
-
-      .close-btn {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: none;
-        border: none;
-        color: #71717a;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        cursor: pointer;
-      }
-
-      .letter-title {
-        font-family: "Playfair Display", serif;
-        font-size: 2rem;
-        color: #18181b;
-        margin-bottom: 30px;
-        line-height: 1.2;
-      }
-
-      .letter-body {
-        font-size: 1rem;
-        line-height: 1.8;
-        color: #3f3f46;
-        text-align: left;
-      }
-
-      .letter-body p {
-        margin-bottom: 1.2rem;
-      }
-
-      .letter-signature {
-        margin-top: 40px;
-        font-family: "Playfair Display", serif;
-        font-style: italic;
-        font-size: 1.1rem;
-        color: #18181b;
-      }
-
-      /* ------------------------------------------- */
-      /* ESPAÇO PARA VÍDEO                           */
-      /* ------------------------------------------- */
-      .video-space {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 50px;
-        background: #000;
-        border-radius: 12px;
-        overflow: hidden;
-      }
-      .main-video {
-        display: block;
-        width: 100%;
-        height: auto;
-        max-height: 80vh;
-        object-fit: contain;
-        background: #000;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: "Inter", sans-serif; background-color: #f4f4f5; min-height: 100vh; overflow: hidden; color: #18181b; -webkit-tap-highlight-color: transparent; }
+      .scene { width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; z-index: 10; }
+      .envelope-wrapper { position: relative; width: 320px; height: 220px; cursor: pointer; transition: transform 0.3s; }
+      .envelope-wrapper:hover { transform: translateY(-5px); }
+      .envelope-back { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #d4d4d8; border-radius: 4px; box-shadow: 0 15px 35px rgba(0,0,0,.1); }
+      .slide-paper { position: absolute; top: 10px; left: 10px; width: 300px; height: 200px; background: #fff; border-radius: 4px; z-index: 2; transition: transform .6s cubic-bezier(.4,0,.2,1); padding: 25px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+      .slide-paper.slide-up { transform: translateY(-150px); }
+      .fake-text-line { height: 8px; background: #f4f4f5; border-radius: 4px; width: 100%; }
+      .fake-text-line:last-child { width: 60%; }
+      .envelope-front-bottom { position:absolute; top:0; left:0; width:100%; height:100%; background:#e4e4e7; clip-path:polygon(0 100%,50% 45%,100% 100%); z-index:3; border-radius:0 0 4px 4px; }
+      .envelope-front-left { position:absolute; top:0; left:0; width:100%; height:100%; background:#f4f4f5; clip-path:polygon(0 0,50% 50%,0 100%); z-index:3; border-radius:4px 0 0 4px; }
+      .envelope-front-right { position:absolute; top:0; left:0; width:100%; height:100%; background:#f4f4f5; clip-path:polygon(100% 0,50% 50%,100% 100%); z-index:3; border-radius:0 4px 4px 0; }
+      .envelope-flap { position:absolute; top:0; left:0; width:100%; height:100%; background:#a1a1aa; clip-path:polygon(0 0,100% 0,50% 60%); z-index:4; transform-origin:top center; transition:transform .5s ease-in-out,z-index .5s; border-radius:4px 4px 0 0; }
+      .seal { position:absolute; top:60%; left:50%; transform:translate(-50%,-50%); width:24px; height:24px; background:#27272a; border-radius:50%; }
+      .envelope-wrapper.is-open .envelope-flap { transform:rotateX(180deg); z-index:1; }
+      .hint-text { margin-top:40px; color:#71717a; font-size:.8rem; letter-spacing:1.5px; text-transform:uppercase; animation:pulse 2s infinite; }
+      @keyframes pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+      .modal-backdrop { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(24,24,27,.85); z-index:99; opacity:0; visibility:hidden; transition:opacity .5s; backdrop-filter:blur(4px); }
+      .modal-backdrop.show { opacity:1; visibility:visible; }
+      .letter-modal { position:fixed; top:50%; left:50%; transform:translate(-50%,-40%) scale(.95); width:100%; height:100dvh; background:#fff; z-index:100; opacity:0; visibility:hidden; transition:all .5s cubic-bezier(.4,0,.2,1); overflow-y:auto; padding:60px 25px 40px; }
+      .letter-modal.show { opacity:1; visibility:visible; transform:translate(-50%,-50%) scale(1); }
+      @media (min-width:640px) { .letter-modal { max-width:550px; height:auto; max-height:85vh; border-radius:8px; padding:50px 40px; } }
+      .close-btn { position:absolute; top:20px; right:20px; background:none; border:none; color:#71717a; font-size:.8rem; text-transform:uppercase; letter-spacing:1px; cursor:pointer; }
+      .letter-title { font-family:"Playfair Display",serif; font-size:2rem; color:#18181b; margin-bottom:30px; line-height:1.2; }
+      .letter-body { font-size:1rem; line-height:1.8; color:#3f3f46; text-align:left; }
+      .letter-body p { margin-bottom:1.2rem; }
+      .letter-signature { margin-top:40px; font-family:"Playfair Display",serif; font-style:italic; font-size:1.1rem; color:#18181b; }
+      .video-space { width:100%; display:flex; justify-content:center; align-items:center; margin-top:50px; background:#000; border-radius:12px; overflow:hidden; min-height:200px; }
+      .main-video { display:block; width:100%; height:auto; max-height:80vh; min-height:200px; object-fit:contain; background:#000; }
     </style>
   </head>
   <body>
-    <!-- Fundo Escuro -->
-    <div
-      class="modal-backdrop"
-      id="modal-backdrop"
-      onclick="closeLetter()"
-    ></div>
+    <div class="modal-backdrop" id="modal-backdrop" onclick="closeLetter()"></div>
 
-    <!-- Carta (Oculta até a animação terminar) -->
     <div class="letter-modal" id="letter-modal">
       <button class="close-btn" onclick="closeLetter()">Fechar</button>
-
       <div class="letter-content-wrapper">
-        <!-- PLAYER DO SPOTIFY PRIMEIRO -->
-        <div
-          style="
-            margin-bottom: 40px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-          "
-        >
-          <iframe
-            style="border-radius: 12px; display: block"
-            src="https://open.spotify.com/embed/track/6Qwb3ydNyVsaL7yqHEmkA8?utm_source=generator&theme=0"
-            width="100%"
-            height="152"
-            frameborder="0"
-            allowfullscreen=""
-            allow="
-              autoplay;
-              clipboard-write;
-              encrypted-media;
-              fullscreen;
-              picture-in-picture;
-            "
-            loading="lazy"
-          ></iframe>
+        <div style="margin-bottom:40px;border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,.05)">
+          <iframe style="border-radius:12px;display:block" src="https://open.spotify.com/embed/track/6Qwb3ydNyVsaL7yqHEmkA8?utm_source=generator&theme=0" width="100%" height="152" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture;" loading="lazy"></iframe>
         </div>
 
-        <!-- TÍTULO DA CARTA (Abaixo do player) -->
         <h1 class="letter-title">Feliz Aniversário,<br />Minha Linda.</h1>
 
-        <!-- TEXTO DA CARTA -->
         <div class="letter-body">
-          <p>
-            Desde que cê chegou na minha vida, cê me fez muito mais feliz e me
-            fez sentir algo novo e único, uma coisa que só vc consegue despertar
-            em mim.
-          </p>
-
-          <p>
-            Sempre que tô com vc, eu entendo ainda mais pq me apaixonei tanto
-            por você. Cê é uma mina foda p crl, espontânea, engraçada, e eu sou
-            completamente louco pelo seu jeito. Pelo jeito que vc trata as
-            pessoas, pelo jeito que vc me trata e por todas essas pequenas
-            coisas que fazem vc ser tão única.
-          </p>
-
-          <p>
-            Quanto mais eu te conheço, mais apaixonado eu fico e mais tenho
-            certeza de que vc é feita pra mim. Eu gosto da sua voz, de quando vc
-            fica toda manhosa comigo igual uma bebê, de quando me chama pelos
-            apelidos que só vc chama, de quando mete marra pra cima de mim, das
-            suas brincadeiras, do seu jeito e, sinceramente, gosto de tudo em
-            vc, Alissa.
-          </p>
-
-          <p>
-            Fico extremamente feliz e grato por poder estar ao seu lado hoje e
-            comemorar mais um ano da sua vida com vc. Quero que saiba que eu
-            sempre vou estar aqui, independente de qualquer coisa. Meu carinho
-            por vc nunca vai mudar. Vc é extremamente importante pra mim e ocupa
-            um lugar muito especial na minha vida.
-          </p>
-
-          <p>
-            Quero ter você sempre, todos os dias, em todos os momentos. Vc me
-            traz uma paz enorme e, quando tô com vc, sinto que meu lugar é
-            exatamente ali. Quero poder te proporcionar as melhores coisas, te
-            ver feliz e estar ao seu lado em tudo que vier, pq vc merece tudo de
-            melhor.
-          </p>
+          <p>Desde que cê chegou na minha vida, cê me fez muito mais feliz e me fez sentir algo novo e único, uma coisa que só vc consegue despertar em mim.</p>
+          <p>Sempre que tô com vc, eu entendo ainda mais pq me apaixonei tanto por você. Cê é uma mina foda p crl, espontânea, engraçada, e eu sou completamente louco pelo seu jeito. Pelo jeito que vc trata as pessoas, pelo jeito que vc me trata e por todas essas pequenas coisas que fazem vc ser tão única.</p>
+          <p>Quanto mais eu te conheço, mais apaixonado eu fico e mais tenho certeza de que vc é feita pra mim. Eu gosto da sua voz, de quando vc fica toda manhosa comigo igual uma bebê, de quando me chama pelos apelidos que só vc chama, de quando mete marra pra cima de mim, das suas brincadeiras, do seu jeito e, sinceramente, gosto de tudo em vc, Alissa.</p>
+          <p>Fico extremamente feliz e grato por poder estar ao seu lado hoje e comemorar mais um ano da sua vida com vc. Quero que saiba que eu sempre vou estar aqui, independente de qualquer coisa. Meu carinho por vc nunca vai mudar. Vc é extremamente importante pra mim e ocupa um lugar muito especial na minha vida.</p>
+          <p>Quero ter você sempre, todos os dias, em todos os momentos. Vc me traz uma paz enorme e, quando tô com vc, sinto que meu lugar é exatamente ali. Quero poder te proporcionar as melhores coisas, te ver feliz e estar ao seu lado em tudo que vier, pq vc merece tudo de melhor.</p>
         </div>
 
-        <!-- ASSINATURA -->
-        <div class="letter-signature">
-          Eu te amo muito.<br />
-          Aproveita seu dia, minha gata.
-        </div>
+        <div class="letter-signature">Eu te amo muito.<br />Aproveita seu dia, minha gata.</div>
 
-        <!-- VÍDEO -->
         <div class="video-space">
-          <video class="main-video" controls playsinline preload="metadata">
-            <source src="src/videoalissa.mp4" type="video/mp4" />
+          <video class="main-video" controls playsinline preload="auto">
+            <source src="https://raw.githubusercontent.com/criscr777/alissa/main/src/videoalissa.mp4" type="video/mp4" />
             Seu navegador não suporta reprodução de vídeo.
           </video>
         </div>
       </div>
     </div>
 
-    <!-- Cena Inicial (O Envelope) -->
     <div class="scene" id="scene">
       <div class="envelope-wrapper" id="envelope" onclick="openLetter()">
-        <!-- Traseira -->
         <div class="envelope-back"></div>
-
-        <!-- O Papel que desliza -->
         <div class="slide-paper" id="slide-paper">
-          <div class="fake-text-line"></div>
-          <div class="fake-text-line"></div>
-          <div class="fake-text-line"></div>
-          <div class="fake-text-line"></div>
+          <div class="fake-text-line"></div><div class="fake-text-line"></div><div class="fake-text-line"></div><div class="fake-text-line"></div>
         </div>
-
-        <!-- Frente (Geometria do envelope) -->
         <div class="envelope-front-bottom"></div>
         <div class="envelope-front-left"></div>
         <div class="envelope-front-right"></div>
-
-        <!-- Aba Superior que abre -->
-        <div class="envelope-flap">
-          <div class="seal"></div>
-        </div>
+        <div class="envelope-flap"><div class="seal"></div></div>
       </div>
-
       <div class="hint-text">Toque para abrir</div>
     </div>
 
     <script>
       let isAnimating = false;
-      const fallbackVideoUrl =
-        "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-      const videoElement = document.querySelector(".main-video");
 
-      if (videoElement) {
-        videoElement.addEventListener("error", () => {
-          if (videoElement.dataset.fallbackApplied === "true") return;
-
-          videoElement.dataset.fallbackApplied = "true";
-          videoElement.pause();
-          videoElement.src = fallbackVideoUrl;
-          videoElement.load();
-          videoElement.play().catch(() => {});
-        });
-      }
       function openLetter() {
         if (isAnimating) return;
-
         const envelope = document.getElementById("envelope");
         const slidePaper = document.getElementById("slide-paper");
         const modalBackdrop = document.getElementById("modal-backdrop");
         const letterModal = document.getElementById("letter-modal");
-
         isAnimating = true;
-
-        // 1. Abre a aba superior do envelope
         envelope.classList.add("is-open");
 
-        // 2. Espera a aba abrir e empurra o papel para cima
         setTimeout(() => {
           slidePaper.classList.add("slide-up");
-
-          // 3. O papel saiu do envelope. Escurece o fundo e exibe a carta real
           setTimeout(() => {
             modalBackdrop.classList.add("show");
             letterModal.classList.add("show");
-
-            setTimeout(() => {
-              isAnimating = false;
-            }, 500);
-          }, 600); // Tempo para o papel subir
-        }, 500); // Tempo para a aba girar
+            isAnimating = false;
+          }, 600);
+        }, 500);
       }
 
       function closeLetter() {
         if (isAnimating) return;
-
         const envelope = document.getElementById("envelope");
         const slidePaper = document.getElementById("slide-paper");
         const modalBackdrop = document.getElementById("modal-backdrop");
         const letterModal = document.getElementById("letter-modal");
-
         isAnimating = true;
-
-        // 1. Esconde a carta grande e o fundo escuro
         modalBackdrop.classList.remove("show");
         letterModal.classList.remove("show");
 
-        // 2. Aguarda sumir e desce o papel de volta pro envelope
         setTimeout(() => {
           slidePaper.classList.remove("slide-up");
-
-          // 3. Fecha a aba do envelope
           setTimeout(() => {
             envelope.classList.remove("is-open");
-            isAnimating = false;
-
-            // Volta o scroll para o topo para a próxima vez que ela abrir
             letterModal.scrollTop = 0;
+            isAnimating = false;
           }, 600);
         }, 500);
       }
